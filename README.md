@@ -118,17 +118,26 @@ container in the bottom row, similar to this:
 ```bash
 $ quilt ps
 MACHINE         ROLE      PROVIDER    REGION       SIZE        PUBLIC IP         STATUS
-e5b1839d2bea    Master    Amazon      us-west-1    t2.micro    54.67.64.87       connected
-e2401c348c78    Worker    Amazon      us-west-1    t2.micro    54.183.134.153    connected
+e5b1839d2bea    Master    Amazon      us-west-1    t2.micro    52.53.161.116     connected
+e2401c348c78    Worker    Amazon      us-west-1    t2.micro    54.215.234.111    connected
 
-CONTAINER       MACHINE         COMMAND                              LABELS       STATUS     CREATED           PUBLIC IP
-3482fd5f7197    e2401c348c78    luise/bear-maps-base /bin/sh -...    bear-maps    running    53 seconds ago    54.183.134.153:4567
+CONTAINER       MACHINE         COMMAND                              LABELS       STATUS     CREATED               PUBLIC IP
+5380e5a57b79    e2401c348c78    luise/bear-maps-base /bin/sh -...    bear-maps    running    About a minute ago
+7d5d276468d1    e2401c348c78    haproxy:1.6.4 haproxy-systemd-...    hap          running    About a minute ago    54.215.234.111:80
 ```
 
 Now you can access your BearMaps application! Simply use your browser to go to
 the public IP address and port shown in the `quilt ps` output - in this case
-`54.183.134.153:4567`. Now that your BearMaps is running in the cloud, anyone
-can access it in their browser using the same IP address!
+`54.215.234.111`. Yours will likely be different. Now that your BearMaps is
+running in the cloud, anyone can access it in their browser using the same
+IP address!
+
+If you're wondering why the IP address is associated with the container labelled
+`hap` instead of `bear-maps`, that's just because we use a service called
+`HAProxy` to distribute requests across multiple instances of BearMaps. Since
+you're only running a single BearMaps instance, this doesn't do much, but if
+you were running more (like we do for the reference solution!) it's quite
+useful.
 
 ### Stopping Quilt
 When you're done enjoying your great work, run `quilt stop` to shut down the

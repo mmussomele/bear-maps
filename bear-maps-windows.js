@@ -2,20 +2,19 @@ var dirs = ["src\\main", "src\\static"];
 var dstDir = "/usr/src/app";
 var port = 4567;
 
-function BearMaps(projRoot) {
+function BearMaps(projRoot, nWorker) {
 	var files = getFiles(projRoot);
 
 	// The `cp` command is a hack. Maven should make this copy, but for some
 	// reason doesn't.
-	var container = new Container("luise/bear-maps-base",
+	var containers = new Container("luise/bear-maps-base",
 		["/bin/sh", "-c",
 		"mvn -X install && " +
 		"cp -r src/static/page target/classes && " +
 		"mvn -X exec:java -Dexec.mainClass=\"MapServer\""]
-	).withFiles(files);
+	).withFiles(files).replicate(nWorker);
 
-	var service = new Service("bear-maps", [container]);
-	publicInternet.connect(port, service);
+	var service = new Service("bear-maps", containers);
 	service.connect(80, publicInternet);
 	service.connect(443, publicInternet);
 	service.connect(53, publicInternet);
